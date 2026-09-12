@@ -1,0 +1,24 @@
+CREATE TABLE IngresoMensual (
+    id    TEXT    NOT NULL PRIMARY KEY,
+    anio  INTEGER NOT NULL,
+    mes   INTEGER NOT NULL,
+    monto REAL    NOT NULL,
+
+    UNIQUE(anio, mes)
+);
+
+-- Insertar o reemplazar el ingreso de un mes
+-- Si ya existe para ese año/mes, lo sobreescribe
+insertar:
+INSERT OR REPLACE INTO IngresoMensual(id, anio, mes, monto)
+VALUES (?, ?, ?, ?);
+
+-- Obtener el ingreso de un mes específico
+obtenerPorMes:
+SELECT * FROM IngresoMensual
+WHERE anio = ? AND mes = ?;
+
+-- Ingresos por rango de meses (para exportación)
+obtenerEnRango:
+SELECT * FROM IngresoMensual
+WHERE (anio * 100 + mes) >= ? AND (anio * 100 + mes) <= ?;

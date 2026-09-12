@@ -1,0 +1,144 @@
+CREATE TABLE Gasto (
+    id           TEXT    NOT NULL PRIMARY KEY,
+    monto        REAL    NOT NULL,
+    descripcion  TEXT    NOT NULL,
+    categoria_id TEXT    NOT NULL,
+    fecha        TEXT    NOT NULL,
+    anio         INTEGER NOT NULL,
+    mes          INTEGER NOT NULL,
+    cuota_actual INTEGER,
+    cuota_total  INTEGER,
+    id_padre     TEXT,
+
+    FOREIGN KEY (categoria_id) REFERENCES Categoria(id)
+);
+
+CREATE INDEX idx_gasto_mes   ON Gasto(anio, mes);
+CREATE INDEX idx_gasto_padre ON Gasto(id_padre);
+
+-- Insertar un gasto
+insertar:
+INSERT INTO Gasto(id, monto, descripcion, categoria_id, fecha, anio, mes, cuota_actual, cuota_total, id_padre)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Obtener todos los gastos de un mes ordenados por fecha
+obtenerPorMes:
+SELECT
+    g.*,
+    c.nombre      AS categoria_nombre,
+    c.color       AS categoria_color,
+    c.icono       AS categoria_icono
+FROM Gasto g
+INNER JOIN Categoria c ON g.categoria_id = c.id
+WHERE g.anio = ? AND g.mes = ?
+ORDER BY g.fecha DESC, g.rowid DESC;
+
+-- Obtener gasto individual por ID
+obtenerPorId:
+SELECT
+    g.*,
+    c.nombre      AS categoria_nombre,
+    c.color       AS categoria_color,
+    c.icono       AS categoria_icono
+FROM Gasto g
+INNER JOIN Categoria c ON g.categoria_id = c.id
+WHERE g.id = ?;
+
+-- Obtener todos los gastos de una serie de cuotas (por id_padre)
+obtenerPorIdPadre:
+SELECT * FROM Gasto
+WHERE id_padre = ?
+ORDER BY cuota_actual ASC;
+
+-- Total gastado en un mes (para el dashboard)
+totalPorMes:
+SELECT COALESCE(SUM(monto), 0.0) AS total
+FROM Gasto
+WHERE anio = ? AND mes = ?;
+
+-- Total por categoría en un mes (para el gráfico de distribución)
+totalPorCategoriaMes:
+SELECT
+    c.id,
+    c.nombre,
+    c.color,
+    COALESCE(SUM(g.monto), 0.0) AS total
+FROM Categoria c
+LEFT JOIN Gasto g ON g.categoria_id = c.id
+    AND g.anio = ? AND g.mes = ?
+GROUP BY c.id, c.nombre, c.color
+ORDER BY total DESC;
+
+-- Buscador global por descripción
+buscarPorDescripcion:
+SELECT
+    g.*,
+    c.nombre      AS categoria_nombre,
+    c.color       AS categoria_color,
+    c.icono       AS categoria_icono
+FROM Gasto g
+INNER JOIN Categoria c ON g.categoria_id = c.id
+WHERE g.descripcion LIKE '%' || ? || '%'
+ORDER BY g.fecha DESC;
+
+-- Actualizar un gasto individual
+actualizar:
+UPDATE Gasto
+SET monto        = ?,
+    descripcion  = ?,
+    categoria_id = ?,
+    fecha        = ?,
+    anio         = ?,
+    mes          = ?
+WHERE id = ?;
+
+-- Actualizar todos los gastos futuros de una serie de cuotas
+actualizarCuotasFuturas:
+UPDATE Gasto
+SET monto        = ?,
+    descripcion  = ?,
+    categoria_id = ?
+WHERE id_padre = ?
+  AND cuota_actual >= ?;
+
+-- Actualizar toda la serie de cuotas
+actualizarTodaSerie:
+UPDATE Gasto
+SET monto        = ?,
+    descripcion  = ?,
+    categoria_id = ?
+WHERE id_padre = ?;
+
+-- Eliminar un gasto individual
+eliminar:
+DELETE FROM Gasto
+WHERE id = ?;
+
+-- Eliminar cuotas futuras de una serie
+eliminarCuotasFuturas:
+DELETE FROM Gasto
+WHERE id_padre = ?
+  AND cuota_actual >= ?;
+
+-- Eliminar toda la serie de cuotas
+eliminarTodaSerie:
+DELETE FROM Gasto
+WHERE id_padre = ?;
+
+-- Cantidad de gastos de una categoría (para validar su eliminación)
+contarPorCategoria:
+SELECT COUNT(*) AS cantidad
+FROM Gasto
+WHERE categoria_id = ?;
+
+-- Gastos en un rango de fechas (para exportación)
+obtenerPorRango:
+SELECT
+    g.*,
+    c.nombre      AS categoria_nombre,
+    c.color       AS categoria_color,
+    c.icono       AS categoria_icono
+FROM Gasto g
+INNER JOIN Categoria c ON g.categoria_id = c.id
+WHERE g.fecha >= ? AND g.fecha <= ?
+ORDER BY g.fecha ASC, g.rowid ASC;

@@ -1,0 +1,46 @@
+CREATE TABLE Categoria (
+    id          TEXT    NOT NULL PRIMARY KEY,
+    nombre      TEXT    NOT NULL,
+    descripcion TEXT,
+    color       TEXT    NOT NULL DEFAULT '#6200EE',
+    icono       TEXT    NOT NULL DEFAULT 'categoria',
+    orden       INTEGER NOT NULL DEFAULT 0,
+    fijada      INTEGER NOT NULL DEFAULT 0
+);
+
+-- Insertar una nueva categoría
+insertar:
+INSERT INTO Categoria(id, nombre, descripcion, color, icono, orden, fijada)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- Obtener todas las categorías ordenadas por fijadas primero, luego por orden
+obtenerTodas:
+SELECT * FROM Categoria
+ORDER BY fijada DESC, orden ASC;
+
+-- Obtener una categoría por ID
+obtenerPorId:
+SELECT * FROM Categoria
+WHERE id = ?;
+
+-- Actualizar una categoría
+actualizar:
+UPDATE Categoria
+SET nombre      = ?,
+    descripcion = ?,
+    color       = ?,
+    icono       = ?,
+    orden       = ?,
+    fijada      = ?
+WHERE id = ?;
+
+-- Actualizar solo el orden de una categoría (para drag & drop)
+actualizarOrden:
+UPDATE Categoria
+SET orden = ?
+WHERE id = ?;
+
+-- Eliminar una categoría
+eliminar:
+DELETE FROM Categoria
+WHERE id = ?;
