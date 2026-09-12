@@ -16,7 +16,7 @@ Aplicación de gestión de gastos personales multiplataforma (Android + Desktop)
   - Un gasto se identifica por tener un **monto mayor a 0**.
   - Si falta descripción, categoría o fecha, se completan con valores por defecto (`-`, `-`, primer día del mes actual); la categoría `-` se crea automáticamente si no existe.
 - **Multidioma**: interfaz en español, inglés y francés.
-- **Tema**: interfaz moderna con Material 3 (Material You en Android).
+- **Tema**: interfaz moderna con Material 3 y tema oscuro.
 
 ## Tecnologías
 

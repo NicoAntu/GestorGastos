@@ -60,9 +60,6 @@ kotlin {
 
                 // Coroutines
                 implementation(libs.kotlinx.coroutines.core)
-
-                // UUID
-                implementation(libs.kotlinx.uuid)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
