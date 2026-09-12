@@ -18,6 +18,10 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
 
+# Tooling local (GSD/SDD), no se sube
+.superpowers/
+docs/superpowers/
+
 # Secretos y credenciales
 client_secret.json
 keystore.properties
