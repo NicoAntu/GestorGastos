@@ -1,6 +1,7 @@
 # GestorGastos
 
 Aplicación de gestión de gastos personales mes a mes.
+Personal expense management app, month by month.
 
 Elegí tu idioma / Choose your language:
 
